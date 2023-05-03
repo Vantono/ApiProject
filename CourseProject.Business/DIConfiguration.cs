@@ -17,6 +17,7 @@ public class DIConfiguration
         services.AddScoped<IAddressService, AddressService>();
         services.AddScoped<IJobService, JobService>();
         services.AddScoped<IEmployeeService, EmployeeService>();
+        services.AddScoped<ITeamService, TeamService>();
     }
         
 }

@@ -11,6 +11,7 @@ builder.Services.AddDbContext<ApplicationDbContext>();
 builder.Services.AddScoped<IGenericRepository<Address>, GenericRepository<Address>>();
 builder.Services.AddScoped<IGenericRepository<Job>, GenericRepository<Job>>();
 builder.Services.AddScoped<IGenericRepository<Employee>, GenericRepository<Employee>>();
+builder.Services.AddScoped<IGenericRepository<Team>, GenericRepository<Team>>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
