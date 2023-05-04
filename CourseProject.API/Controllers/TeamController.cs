@@ -1,4 +1,5 @@
-﻿using CourseProject.Common.DTOs.Teams;
+﻿using AutoMapper;
+using CourseProject.Common.DTOs.Teams;
 using CourseProject.Common.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,7 +35,7 @@ public class TeamController : ControllerBase
         return Ok();
     }
     [HttpGet]
-    [Route("Get/{Id}")]
+    [Route("Get/{id}")]
     public async Task<IActionResult> GetTeam(int Id)
     {
         var team = await TeamService.GetTeamAsync(Id);
@@ -42,7 +43,7 @@ public class TeamController : ControllerBase
     }
     [HttpGet]
     [Route("Get")]
-    public async Task<IActionResult> GetTeams(TeamGet teamGet)
+    public async Task<IActionResult> GetTeams()
     {
         var teams = await TeamService.GetTeamsAsync();
         return Ok(teams);

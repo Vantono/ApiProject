@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using CourseProject.Business.Validators;
 using CourseProject.Common.DTOs.Employee;
 using CourseProject.Common.Interfaces;
 using CourseProject.Common.Model;
+using FluentValidation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,18 +19,25 @@ public class EmployeeService : IEmployeeService
     public IGenericRepository<Job> JobRepository { get; }
     public IGenericRepository<Address> AddressRepository { get; }
     private IMapper Mapper { get; }
+    private EmployeeCreateValidator EmployeeCreateValidator { get; }
+    private EmployeeUpdateValidator EmployeeUpdateValidator { get; }
 
-    public EmployeeService(IGenericRepository<Employee> employeeRepository,IGenericRepository<Job> jobRepository,IGenericRepository<Address> addressRepository ,IMapper mapper)
+    public EmployeeService(IGenericRepository<Employee> employeeRepository,IGenericRepository<Job> jobRepository,IGenericRepository<Address> addressRepository ,IMapper mapper,
+        EmployeeCreateValidator employeeCreateValidator, EmployeeUpdateValidator employeeUpdateValidator)
     {
         EmployeeRepository = employeeRepository;
         JobRepository = jobRepository;
         AddressRepository = addressRepository;
         Mapper = mapper;
+        EmployeeCreateValidator = employeeCreateValidator;
+        EmployeeUpdateValidator = employeeUpdateValidator;
     }
 
 
     public async Task<int> CreateEmployeeAsync(EmployeeCreate employeeCreate)
     {
+        await EmployeeCreateValidator.ValidateAndThrowAsync(employeeCreate);
+
         var address = await AddressRepository.GetByIdAsync(employeeCreate.AddressId);
         var job =  await JobRepository.GetByIdAsync(employeeCreate.JobId);
         var entity = Mapper.Map<Employee>(employeeCreate);
@@ -75,6 +84,8 @@ public class EmployeeService : IEmployeeService
 
     public async Task UpdateEmployeeAsync(EmployeeUpdate employeeUpdate)
     {
+        await EmployeeUpdateValidator.ValidateAndThrowAsync(employeeUpdate);
+
         var address = await AddressRepository.GetByIdAsync(employeeUpdate.AddressId);
         var job = await JobRepository.GetByIdAsync(employeeUpdate.JobId);
         var entity = Mapper.Map<Employee>(employeeUpdate);

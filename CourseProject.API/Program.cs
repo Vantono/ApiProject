@@ -1,3 +1,4 @@
+using CourseProject.API;
 using CourseProject.Business;
 using CourseProject.Common.Interfaces;
 using CourseProject.Common.Model;
@@ -32,6 +33,8 @@ using (var scope = app.Services.CreateScope())
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     dbContext.Database.EnsureCreated();
 }
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 

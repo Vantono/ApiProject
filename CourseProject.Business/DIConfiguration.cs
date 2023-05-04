@@ -1,4 +1,5 @@
 ﻿using CourseProject.Business.Services;
+using CourseProject.Business.Validators;
 using CourseProject.Common.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -18,6 +19,15 @@ public class DIConfiguration
         services.AddScoped<IJobService, JobService>();
         services.AddScoped<IEmployeeService, EmployeeService>();
         services.AddScoped<ITeamService, TeamService>();
+
+        services.AddScoped<AddressCreateValidator>();
+        services.AddScoped<AddressUpdateValidator>();
+        services.AddScoped<EmployeeCreateValidator>();
+        services.AddScoped<EmployeeUpdateValidator>();
+        services.AddScoped<JobCreateValidator>();
+        services.AddScoped<JobUpdateValidator>();
+        services.AddScoped<TeamCreateValidator>();
+        services.AddScoped<TeamUpdateValidator>();
     }
         
 }
