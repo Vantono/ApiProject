@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CourseProject.API.Controllers;
 [ApiController]
-[Route("controller")]
+[Route("[controller]")]
 public class AddressController : ControllerBase
 {
     private IAddressService AddressService { get; }

@@ -13,6 +13,6 @@ public interface ITeamService
     Task<int> CreatTeamAsync(TeamCreate teamCreate);
     Task UpdateteamAsync(TeamUpdate updateTeam);
     Task<List<TeamGet>> GetTeamsAsync();
-    Task<TeamGet> GetTeamAsync(int teamId);
+    Task<TeamGet> GetTeamAsync(int id);
     Task DeleteTeamAsync(TeamDelete teamDelete);
 }

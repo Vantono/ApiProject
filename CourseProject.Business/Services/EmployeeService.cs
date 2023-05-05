@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CourseProject.Business.Exceptions;
 using CourseProject.Business.Validators;
 using CourseProject.Common.DTOs.Employee;
 using CourseProject.Common.Interfaces;
@@ -16,8 +17,8 @@ namespace CourseProject.Business.Services;
 public class EmployeeService : IEmployeeService
 {
     private IGenericRepository<Employee> EmployeeRepository { get; }
-    public IGenericRepository<Job> JobRepository { get; }
-    public IGenericRepository<Address> AddressRepository { get; }
+    private IGenericRepository<Job> JobRepository { get; }
+    private IGenericRepository<Address> AddressRepository { get; }
     private IMapper Mapper { get; }
     private EmployeeCreateValidator EmployeeCreateValidator { get; }
     private EmployeeUpdateValidator EmployeeUpdateValidator { get; }
@@ -39,7 +40,13 @@ public class EmployeeService : IEmployeeService
         await EmployeeCreateValidator.ValidateAndThrowAsync(employeeCreate);
 
         var address = await AddressRepository.GetByIdAsync(employeeCreate.AddressId);
+        if (address==null)
+            throw new AddressNotFoundException(employeeCreate.AddressId);
+       
         var job =  await JobRepository.GetByIdAsync(employeeCreate.JobId);
+        if (job==null)
+            throw new JobNotFoundException(employeeCreate.JobId);
+        
         var entity = Mapper.Map<Employee>(employeeCreate);
         entity.Address = address;
         entity.Job = job;
@@ -51,6 +58,10 @@ public class EmployeeService : IEmployeeService
     public  async Task DeleteEmployeeAsync(EmployeeDelete employeeDelete)
     {
         var entity = await EmployeeRepository.GetByIdAsync(employeeDelete.Id);
+        
+        if (entity == null)
+            throw new EmployeeNotFoundException(employeeDelete.Id);
+       
         EmployeeRepository.Delete(entity);
         await EmployeeRepository.SaveChangesAsync();
 
@@ -59,6 +70,8 @@ public class EmployeeService : IEmployeeService
     public async Task<EmployeeDetails> GetEmployeeAsync(int id)
     {
         var entity =  await EmployeeRepository.GetByIdAsync(id, (employee) => employee.Address, (employee) => employee.Job, (employee) => employee.Teams);
+        if (entity == null)
+            throw new EmployeeNotFoundException(id);
         return Mapper.Map<EmployeeDetails>(entity);
     }
 
@@ -87,10 +100,22 @@ public class EmployeeService : IEmployeeService
         await EmployeeUpdateValidator.ValidateAndThrowAsync(employeeUpdate);
 
         var address = await AddressRepository.GetByIdAsync(employeeUpdate.AddressId);
+        if (address == null)
+            throw new AddressNotFoundException(employeeUpdate.AddressId);
         var job = await JobRepository.GetByIdAsync(employeeUpdate.JobId);
+        if (job == null)
+            throw new JobNotFoundException(employeeUpdate.JobId);
+        
+        var existingEmployee = await EmployeeRepository.GetByIdAsync(employeeUpdate.Id);
+        if (existingEmployee == null)
+            throw new EmployeeNotFoundException(employeeUpdate.Id);
+        
         var entity = Mapper.Map<Employee>(employeeUpdate);
         entity.Address = address;
         entity.Job = job;
+       
+
+        
         EmployeeRepository.Update(entity);
         await EmployeeRepository.SaveChangesAsync();
 

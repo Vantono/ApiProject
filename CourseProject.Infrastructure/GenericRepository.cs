@@ -28,17 +28,20 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
         DbSet.Remove(entity);
     }
 
-    public async Task<List<T>> GetAsync(int? skip, int? take, params System.Linq.Expressions.Expression<Func<T, object>>[] includes)
+    public async Task<List<T>> GetAsync(int? skip, int? take, params Expression<Func<T, object>>[] includes)
     {
         IQueryable<T> query = DbSet;
+
         foreach (var include in includes)
             query = query.Include(include);
+
         if (skip != null)
             query = query.Skip(skip.Value);
+
         if (take != null)
             query = query.Take(take.Value);
-        return await query.ToListAsync();
 
+        return await query.ToListAsync();
     }
 
     public async Task<T?> GetByIdAsync(int id, params Expression<Func<T, object>>[] includes)
@@ -46,10 +49,11 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
         IQueryable<T> query = DbSet;
 
         query = query.Where(entity => entity.Id == id);
+
         foreach (var include in includes)
             query = query.Include(include);
-        return await query.SingleOrDefaultAsync();
 
+        return await query.SingleOrDefaultAsync();
     }
 
     public async Task<List<T>> GetFilteredAsync(Expression<Func<T, bool>>[] filters, int? skip, int? take, params Expression<Func<T, object>>[] includes)

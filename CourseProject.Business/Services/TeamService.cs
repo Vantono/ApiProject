@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CourseProject.Business.Exceptions;
 using CourseProject.Business.Validators;
 using CourseProject.Common.DTOs.Teams;
 using CourseProject.Common.Interfaces;
@@ -38,6 +39,11 @@ public class TeamService : ITeamService
 
         Expression<Func<Employee, bool>> employeeFilter = (employee)=> teamCreate.Employees.Contains(employee.Id);
         var employees = await EmployeeRepository.GetFilteredAsync(new[] { employeeFilter }, null, null);
+        
+        var missingEmployees = teamCreate.Employees.Where((Id)=> !employees.Any(existing=> existing.Id == Id));
+        if (missingEmployees.Any()) 
+            throw new EmployeesNotFoundException(missingEmployees.ToArray());
+        
         var entity = Mapper.Map<Team>(teamCreate);
         entity.Employees= employees;
         await TeamRepository.InsertAsyinc(entity);
@@ -48,6 +54,10 @@ public class TeamService : ITeamService
     public async Task DeleteTeamAsync(TeamDelete teamDelete)
     {
         var entity = await TeamRepository.GetByIdAsync(teamDelete.Id);
+       
+        if (entity == null)
+            throw new TeamNotFoundException(teamDelete.Id);
+       
         TeamRepository.Delete(entity);
         await TeamRepository.SaveChangesAsync();
     }
@@ -55,6 +65,8 @@ public class TeamService : ITeamService
     public async Task<TeamGet> GetTeamAsync(int id)
     {
         var entity = await TeamRepository.GetByIdAsync(id, (team) => team.Employees);
+        if (entity == null)
+            throw new TeamNotFoundException(id);
         return Mapper.Map<TeamGet>(entity);
     }
 
@@ -68,7 +80,15 @@ public class TeamService : ITeamService
         await TeamUpdateValidator.ValidateAndThrowAsync(teamUpdate);
         Expression<Func<Employee, bool>> employeeFilter = (employee) => teamUpdate.Employees.Contains(employee.Id);
         var employees = await EmployeeRepository.GetFilteredAsync(new[] { employeeFilter }, null, null);
+        var missingEmployees = teamUpdate.Employees.Where((Id) => !employees.Any(existing => existing.Id == Id));
+      
+        if (missingEmployees.Any())
+            throw new EmployeesNotFoundException(missingEmployees.ToArray());
+      
         var existingEntity = await TeamRepository.GetByIdAsync(teamUpdate.Id, (team) => team.Employees);
+        if (existingEntity == null)
+            throw new TeamNotFoundException(teamUpdate.Id);
+      
         Mapper.Map(teamUpdate,existingEntity);
         existingEntity.Employees = employees;
         TeamRepository.Update(existingEntity);

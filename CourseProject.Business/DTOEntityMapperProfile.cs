@@ -20,31 +20,32 @@ public class DTOEntityMapperProfile : Profile
         CreateMap<Address, AddressGet>();
 
         CreateMap<JobCreate, Job>()
-            .ForMember(dest =>dest.Id, opt => opt.Ignore());
+            .ForMember(dest => dest.Id, opt => opt.Ignore());
         CreateMap<JobUpdate, Job>();
         CreateMap<Job, JobGet>();
 
         CreateMap<EmployeeCreate, Employee>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())
-            .ForMember(dest => dest.Job, opt => opt.Ignore())
-            .ForMember(dest => dest.Teams, opt => opt.Ignore());
+            .ForMember(dest => dest.Teams, opt => opt.Ignore())
+            .ForMember(dest => dest.Job, opt => opt.Ignore());
+
         CreateMap<EmployeeUpdate, Employee>()
-            .ForMember(dest => dest.Job, opt => opt.Ignore())
-            .ForMember(dest => dest.Teams, opt => opt.Ignore());
+            .ForMember(dest => dest.Teams, opt => opt.Ignore())
+            .ForMember(dest => dest.Job, opt => opt.Ignore());
+
         CreateMap<Employee, EmployeeDetails>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())
+            .ForMember(dest => dest.Teams, opt => opt.Ignore())
             .ForMember(dest => dest.Job, opt => opt.Ignore())
-           // .ForMember(dest => dest.Teams, opt => opt.Ignore())
-            .ForMember(dest=> dest.Address, opt=> opt.Ignore());
-        CreateMap<EmployeeList, Employee>();
+            .ForMember(dest => dest.Address, opt => opt.Ignore());
+
+        CreateMap<Employee, EmployeeList>();
 
         CreateMap<TeamCreate, Team>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())
             .ForMember(dest => dest.Employees, opt => opt.Ignore());
-
         CreateMap<TeamUpdate, Team>()
             .ForMember(dest => dest.Employees, opt => opt.Ignore());
         CreateMap<Team, TeamGet>();
-
     }
 }

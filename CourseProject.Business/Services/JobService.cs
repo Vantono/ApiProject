@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CourseProject.Business.Exceptions;
 using CourseProject.Business.Validators;
 using CourseProject.Common.DTOs;
 using CourseProject.Common.DTOs.Job;
@@ -34,7 +35,15 @@ public class JobService : IJobService
 
     public async Task DeleteJobAsync(JobDelete jobDelete)
     {
-        var entity = await JobRepository.GetByIdAsync(jobDelete.id);
+        var entity = await JobRepository.GetByIdAsync(jobDelete.id, (job) => job.Employees);
+       
+        if (entity == null) 
+            throw new JobNotFoundException(jobDelete.id);
+
+        if (entity.Employees.Count > 0)
+            throw new DependentEmployeesExistException(entity.Employees);
+
+
         JobRepository.Delete(entity);
         await JobRepository.SaveChangesAsync();
     }
@@ -42,6 +51,9 @@ public class JobService : IJobService
     public async Task<JobGet> GetJobAsync(int id)
     {
         var entity = await JobRepository.GetByIdAsync(id);
+        if (entity == null)
+            throw new JobNotFoundException(id);
+
         return Mapper.Map<JobGet>(entity);
     }
 
@@ -55,6 +67,11 @@ public class JobService : IJobService
     {
         await JobUpdateValidator.ValidateAndThrowAsync(jobUpdate);
 
+        var existingJob =  await JobRepository.GetByIdAsync(jobUpdate.Id);
+       
+        if (existingJob == null)
+            throw new JobNotFoundException(jobUpdate.Id);
+        
         var entity = Mapper.Map<Job>(jobUpdate);
         JobRepository.Update(entity);
         await JobRepository.SaveChangesAsync();

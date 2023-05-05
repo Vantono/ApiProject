@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
+using CourseProject.Business.Exceptions;
 
 namespace CourseProject.API;
 
@@ -17,6 +18,116 @@ public class ExceptionMiddleware
         try
         {
             await Next(context);
+        }
+        catch (AddressNotFoundException ex)
+        {
+            context.Response.ContentType = "application/problem+json";
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+            var problemDetails = new ProblemDetails()
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Detail = string.Empty,
+                Instance = "",
+                Title = $"Address for id {ex.Id} not found.",
+                Type = "Error"
+
+            };
+            var problemDetailsJson = JsonSerializer.Serialize(problemDetails);
+            await context.Response.WriteAsync(problemDetailsJson);
+
+        }
+        catch (JobNotFoundException ex)
+        {
+            context.Response.ContentType = "application/problem+json";
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+            var problemDetails = new ProblemDetails()
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Detail = string.Empty,
+                Instance = "",
+                Title = $"Job for id {ex.Id} not found.",
+                Type = "Error"
+
+            };
+            var problemDetailsJson = JsonSerializer.Serialize(problemDetails);
+            await context.Response.WriteAsync(problemDetailsJson);
+
+        }
+        catch (EmployeeNotFoundException ex)
+        {
+            context.Response.ContentType = "application/problem+json";
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+            var problemDetails = new ProblemDetails()
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Detail = string.Empty,
+                Instance = "",
+                Title = $"Employee for id {ex.Id} not found.",
+                Type = "Error"
+
+            };
+            var problemDetailsJson = JsonSerializer.Serialize(problemDetails);
+            await context.Response.WriteAsync(problemDetailsJson);
+
+        }
+        catch (EmployeesNotFoundException ex)
+        {
+            context.Response.ContentType = "application/problem+json";
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+            var problemDetails = new ProblemDetails()
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Detail = string.Empty,
+                Instance = "",
+                Title = $"Employees {JsonSerializer.Serialize(ex.EmployeeIds)}not found.",
+                Type = "Error"
+
+            };
+            var problemDetailsJson = JsonSerializer.Serialize(problemDetails);
+            await context.Response.WriteAsync(problemDetailsJson);
+        }
+
+        catch (TeamNotFoundException ex)
+        {
+            context.Response.ContentType = "application/problem+json";
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+            var problemDetails = new ProblemDetails()
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Detail = string.Empty,
+                Instance = "",
+                Title = $"Team for id {ex.Id} not found.",
+                Type = "Error"
+
+            };
+            var problemDetailsJson = JsonSerializer.Serialize(problemDetails);
+            await context.Response.WriteAsync(problemDetailsJson);
+        }
+
+
+        catch (DependentEmployeesExistException ex)
+        {
+            context.Response.ContentType = "application/problem+json";
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+            var problemDetails = new ProblemDetails()
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Detail = string.Empty,
+                Instance = "",
+                Title = $"Dependent Employees {JsonSerializer.Serialize(ex.Employees.Select(
+                    (e) => e.Id))} exist.",
+                Type = "Error"
+
+            };
+            var problemDetailsJson = JsonSerializer.Serialize(problemDetails);
+            await context.Response.WriteAsync(problemDetailsJson);
+
         }
         catch (ValidationException ex)
         {
