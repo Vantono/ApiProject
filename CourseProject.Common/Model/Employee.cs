@@ -13,5 +13,5 @@ public class Employee : BaseEntity
     public Address Address { get; set; } = default!;
     public Job Job { get; set; } = default!;
     public List<Team> Teams { get; set; } = default!;
-
+    public string? ProfilePhotoPath { get; set; }
 }

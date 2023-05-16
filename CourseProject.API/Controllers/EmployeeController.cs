@@ -28,6 +28,13 @@ public class EmployeeController : ControllerBase
         await EmployeeService.UpdateEmployeeAsync(employeeUpdate);
         return Ok();
     }
+    [HttpPut]
+    [Route("Update/ProfilePhoto")]
+    public async Task<IActionResult> UpdateProfilePhoto([FromForm]ProfilePhotoUpdate profilePhotoUpdate)
+    {
+        await EmployeeService.UpdateProfilePhotoAsync(profilePhotoUpdate);
+        return Ok();
+    }
     [HttpDelete]
     [Route("Delete")]
     public async Task<IActionResult> DeleteEmployee(EmployeeDelete employeeDelete)

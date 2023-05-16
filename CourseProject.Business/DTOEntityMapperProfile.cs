@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using AutoMapper.Configuration.Conventions;
 using CourseProject.Common.DTOs;
 using CourseProject.Common.DTOs.Address;
 using CourseProject.Common.DTOs.Employee;
@@ -11,8 +10,7 @@ namespace CourseProject.Business;
 
 public class DTOEntityMapperProfile : Profile
 {
-
-    public DTOEntityMapperProfile()
+   public DTOEntityMapperProfile()
     {
         CreateMap<AddressCreate, Address>()
             .ForMember(dest => dest.Id, opt => opt.Ignore());
@@ -35,7 +33,7 @@ public class DTOEntityMapperProfile : Profile
 
         CreateMap<Employee, EmployeeDetails>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())
-            .ForMember(dest => dest.Teams, opt => opt.Ignore())
+            //.ForMember(dest => dest.Teams, opt => opt.Ignore())
             .ForMember(dest => dest.Job, opt => opt.Ignore())
             .ForMember(dest => dest.Address, opt => opt.Ignore());
 

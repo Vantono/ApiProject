@@ -28,6 +28,7 @@ public class DIConfiguration
         services.AddScoped<JobUpdateValidator>();
         services.AddScoped<TeamCreateValidator>();
         services.AddScoped<TeamUpdateValidator>();
+        services.AddScoped<ImageFileValidator>();
     }
         
 }

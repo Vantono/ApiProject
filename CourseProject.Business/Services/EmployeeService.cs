@@ -16,15 +16,18 @@ namespace CourseProject.Business.Services;
 
 public class EmployeeService : IEmployeeService
 {
+    
     private IGenericRepository<Employee> EmployeeRepository { get; }
     private IGenericRepository<Job> JobRepository { get; }
     private IGenericRepository<Address> AddressRepository { get; }
     private IMapper Mapper { get; }
     private EmployeeCreateValidator EmployeeCreateValidator { get; }
     private EmployeeUpdateValidator EmployeeUpdateValidator { get; }
+    private IFileService FileService { get; }
+    private ImageFileValidator ImageFileValidator { get; }
 
     public EmployeeService(IGenericRepository<Employee> employeeRepository,IGenericRepository<Job> jobRepository,IGenericRepository<Address> addressRepository ,IMapper mapper,
-        EmployeeCreateValidator employeeCreateValidator, EmployeeUpdateValidator employeeUpdateValidator)
+        EmployeeCreateValidator employeeCreateValidator, EmployeeUpdateValidator employeeUpdateValidator, IFileService fileService, ImageFileValidator imageFileValidator)
     {
         EmployeeRepository = employeeRepository;
         JobRepository = jobRepository;
@@ -32,6 +35,8 @@ public class EmployeeService : IEmployeeService
         Mapper = mapper;
         EmployeeCreateValidator = employeeCreateValidator;
         EmployeeUpdateValidator = employeeUpdateValidator;
+        FileService = fileService;
+        ImageFileValidator = imageFileValidator;
     }
 
 
@@ -119,5 +124,22 @@ public class EmployeeService : IEmployeeService
         EmployeeRepository.Update(entity);
         await EmployeeRepository.SaveChangesAsync();
 
+    }
+
+    public async Task UpdateProfilePhotoAsync(ProfilePhotoUpdate profilePhotoUpdate)
+    {
+        await ImageFileValidator.ValidateAndThrowAsync(profilePhotoUpdate.Photo);
+
+        var employee = await EmployeeRepository.GetByIdAsync(profilePhotoUpdate.EmployeeId);
+
+        if (employee == null)
+            throw new EmployeeNotFoundException(profilePhotoUpdate.EmployeeId);
+        if (employee.ProfilePhotoPath != null)
+            FileService.DeleteFile(employee.ProfilePhotoPath);
+        var fileName = await FileService.SaveFileAsync(profilePhotoUpdate.Photo);
+        employee.ProfilePhotoPath = fileName;
+
+        EmployeeRepository.Update(employee);
+        await EmployeeRepository.SaveChangesAsync();
     }
 }
